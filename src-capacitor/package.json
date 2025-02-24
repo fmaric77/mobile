@@ -1,0 +1,13 @@
+{
+  "name": "x",
+  "version": "0.0.1",
+  "description": "A Quasar Project",
+  "author": "fmaric77 <fmaric77@gmail.com>",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}

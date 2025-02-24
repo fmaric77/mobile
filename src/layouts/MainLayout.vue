@@ -10,12 +10,10 @@
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
-
         <q-toolbar-title>
-          Quasar App
+          QR Code Master
         </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <div>QR Code Master v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
@@ -25,9 +23,7 @@
       bordered
     >
       <q-list>
-        <q-item-label
-          header
-        >
+        <q-item-label header>
           Essential Links
         </q-item-label>
 
@@ -51,46 +47,34 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Index',
+    caption: 'Home Page',
+    icon: 'home',
+    link: '/'
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+    title: 'KozmetikaWeb',
+    caption: 'Mobile Features',
+    icon: 'smartphone',
+    link: '/kozmetikaweb'
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    title: 'Photo Loader',
+    caption: 'Load Photos',
+    icon: 'image',
+    link: '/photo-loader'
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
+    title: 'Moj QR Kodovi',
+    caption: 'View saved QR codes',
+    icon: 'qr_code',
+    link: '/save-qr-codes'
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+    title: 'QR Scanner',
+    caption: 'Scan QR codes on the fly',
+    icon: 'qr_code_scanner',
+    link: '/qr-code-scanner'
   }
 ]
 
