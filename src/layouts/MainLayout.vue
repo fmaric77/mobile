@@ -7,13 +7,19 @@
           dense
           round
           icon="menu"
-          aria-label="Menu"
+          aria-label="Izbornik"
           @click="toggleLeftDrawer"
         />
         <q-toolbar-title>
-          QR Code Master
+          QR Kod Majstor
         </q-toolbar-title>
-        <div>QR Code Master v{{ $q.version }}</div>
+        <div>QR Kod Majstor v{{ $q.version }}</div>
+        <q-toggle
+          v-model="isDarkMode"
+          label="Dark Mode"
+          color="primary"
+          class="q-ml-md"
+        />
       </q-toolbar>
     </q-header>
 
@@ -23,15 +29,37 @@
       bordered
     >
       <q-list>
-        <q-item-label header>
-          Essential Links
-        </q-item-label>
+        <q-item-label header>Alati za QR kod</q-item-label>
 
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item clickable to="/qr-code-scanner">
+          <q-item-section avatar>
+            <q-icon name="qr_code_scanner" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>QR Skener</q-item-label>
+            <q-item-label caption>Skeniraj QR kodove</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable to="/qr-generator">
+          <q-item-section avatar>
+            <q-icon name="qr_code" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>QR Generator</q-item-label>
+            <q-item-label caption>Kreiraj prilagođene QR kodove</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable to="/save-qr-codes">
+          <q-item-section avatar>
+            <q-icon name="save" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Spremljeni QR Kodovi</q-item-label>
+            <q-item-label caption>Pogledajte svoje QR kodove</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -42,45 +70,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { ref, watch } from 'vue'
+import { useQuasar } from 'quasar'
 
-const linksList = [
-  {
-    title: 'Index',
-    caption: 'Home Page',
-    icon: 'home',
-    link: '/'
-  },
-  {
-    title: 'KozmetikaWeb',
-    caption: 'Mobile Features',
-    icon: 'smartphone',
-    link: '/kozmetikaweb'
-  },
-  {
-    title: 'Photo Loader',
-    caption: 'Load Photos',
-    icon: 'image',
-    link: '/photo-loader'
-  },
-  {
-    title: 'Moj QR Kodovi',
-    caption: 'View saved QR codes',
-    icon: 'qr_code',
-    link: '/save-qr-codes'
-  },
-  {
-    title: 'QR Scanner',
-    caption: 'Scan QR codes on the fly',
-    icon: 'qr_code_scanner',
-    link: '/qr-code-scanner'
-  }
-]
-
+const $q = useQuasar()
 const leftDrawerOpen = ref(false)
+const isDarkMode = ref($q.dark.isActive)
 
 function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+watch(isDarkMode, (newVal) => {
+  $q.dark.set(newVal)
+})
 </script>
