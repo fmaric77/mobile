@@ -47,14 +47,6 @@
           <q-btn flat icon="save" @click="saveQRCode" />
         </q-card-actions>
       </q-card>
-
-      <!-- Error Display -->
-      <q-banner v-if="errorMsg" class="q-mt-md" rounded dense color="negative" text-color="white">
-        <template v-slot:avatar>
-          <q-icon name="error" color="white" />
-        </template>
-        {{ errorMsg }}
-      </q-banner>
     </div>
 
     <!-- Permission Dialog -->
@@ -80,13 +72,13 @@ import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
 import { Haptics } from '@capacitor/haptics'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
+import QRCode from 'qrcode' // Add this import
 
 const $q = useQuasar()
 const router = useRouter()
 
 const isScanning = ref(false)
 const decodedResult = ref('')
-const errorMsg = ref('')
 const showPermissionDialog = ref(false)
 
 const prepareScan = () => {
@@ -138,7 +130,6 @@ const startScan = async () => {
     if (status.granted) {
       prepareScan()
       isScanning.value = true
-      errorMsg.value = ''
       const result = await BarcodeScanner.startScan()
       if (result.hasContent) {
         decodedResult.value = result.content
@@ -164,7 +155,8 @@ const stopScan = async () => {
 }
 
 const handleError = (error) => {
-  errorMsg.value = error.message || 'An error occurred'
+  // Silent error handling - just log to console and reset the scan state
+  console.error('Scanner error:', error)
   isScanning.value = false
   cleanupScan()
 }
@@ -182,146 +174,45 @@ const copyToClipboard = async (text) => {
   }
 }
 
-const saveQRCode = () => {
-  const qrCode = {
-    text: decodedResult.value,
-    createdAt: new Date().toISOString(),
-    id: Math.random().toString(36).substr(2, 9)
+const saveQRCode = async () => {
+  try {
+    // Generate QR code image from scanned text
+    const qrCodeImage = await QRCode.toDataURL(decodedResult.value, {
+      errorCorrectionLevel: 'H',
+      width: 256,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    })
+    
+    const qrCode = {
+      text: decodedResult.value,
+      image: qrCodeImage, // Store the generated QR code image
+      createdAt: new Date().toISOString(),
+      id: Math.random().toString(36).substr(2, 9)
+    }
+    
+    const savedCodes = JSON.parse(localStorage.getItem('savedQRCodes') || '[]')
+    savedCodes.push(qrCode)
+    localStorage.setItem('savedQRCodes', JSON.stringify(savedCodes))
+    
+    await Haptics.vibrate({ duration: 100 })
+    
+    $q.notify({
+      message: 'QR Code saved successfully',
+      color: 'positive',
+      icon: 'save'
+    })
+    
+    // Optionally navigate to saved codes
+    router.push('/save-qr-codes')
+  } catch (error) {
+    handleError(error)
   }
-  
-  const savedCodes = JSON.parse(localStorage.getItem('savedQRCodes') || '[]')
-  savedCodes.push(qrCode)
-  localStorage.setItem('savedQRCodes', JSON.stringify(savedCodes))
-  
-  $q.notify({
-    message: 'QR Code saved successfully',
-    color: 'positive',
-    icon: 'save'
-  })
-  
-  // Optionally navigate to saved codes
-  router.push('/save-qr-codes')
 }
 </script>
 
 <style lang="scss" scoped>
-.scanner-page {
-  position: relative;
-  height: 100vh;
-  background: transparent !important;
-}
-
-.scanner-container {
-  position: relative;
-  height: calc(100vh - 200px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: transparent !important;
-  
-  &.scanning {
-    background: transparent !important;
-  }
-}
-
-.scan-frame {
-  position: relative;
-  width: 280px;
-  height: 280px;
-  
-  .corner-tl, .corner-tr, .corner-bl, .corner-br {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border: 3px solid $primary;
-  }
-  
-  .corner-tl {
-    top: 0;
-    left: 0;
-    border-right: 0;
-    border-bottom: 0;
-  }
-  
-  .corner-tr {
-    top: 0;
-    right: 0;
-    border-left: 0;
-    border-bottom: 0;
-  }
-  
-  .corner-bl {
-    bottom: 0;
-    left: 0;
-    border-right: 0;
-    border-top: 0;
-  }
-  
-  .corner-br {
-    bottom: 0;
-    right: 0;
-    border-left: 0;
-    border-top: 0;
-  }
-  
-  .scan-line {
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background: $primary;
-    animation: scan 2s linear infinite;
-  }
-}
-
-.scanner-controls {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.9);
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 20px;
-}
-
-.status-banner {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  border-radius: 8px;
-}
-
-.result-card {
-  margin-top: 16px;
-  border-radius: 8px;
-}
-
-@keyframes scan {
-  0% {
-    top: 0;
-  }
-  50% {
-    top: 100%;
-  }
-  100% {
-    top: 0;
-  }
-}
-
-:global(body.scanner-active) {
-  background: transparent !important;
-  background-color: transparent !important;
-  
-  & > * {
-    background: transparent !important;
-  }
-
-  .q-page-container,
-  .q-layout,
-  .q-page {
-    background: transparent !important;
-  }
-}
+@import 'QRcodeScanner.scss';
 </style>

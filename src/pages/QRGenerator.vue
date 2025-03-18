@@ -29,14 +29,7 @@
       </q-banner>
     </div>
 
-    <!-- Dijagnostika -->
-    <div class="q-mb-md">
-      <p>Dijagnostika:</p>
-      <p>Poruka o grešci: {{ errorMessage }}</p>
-      <p>Tekst QR koda: {{ qrText }}</p>
-    </div>
-
-    <q-btn label="Spremi QR kod" @click="saveQRCode" color="primary" />
+    <q-btn label="Spremi QR kod" @click="saveQRCode" color="primary" class="q-mt-md" />
   </q-page>
 </template>
 
@@ -98,4 +91,4 @@ const saveQRCode = () => {
 watch([qrText, qrOptions], () => {
   generateQRCode();
 }, { deep: true });
-</script> 
+</script>
